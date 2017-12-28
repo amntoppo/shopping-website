@@ -12,6 +12,11 @@ router.get('/profile', isLoggedIn,  function(req, res, next) {
     res.render('user/profile');
 });
 
+router.get('/logout', isLoggedIn, function (req, res, next) {
+    req.logout();
+    res.redirect('/');
+});
+
 router.get('/', notLoggedIn, function (req, res, next) {
     next();
 });
@@ -27,13 +32,6 @@ router.post('/signup', passport.authenticate('local.signup', {
     failureRedirect: '/user/signup',
     failureFlash: true
 }));
-
-
-
-router.get('/logout', function (req, res, next) {
-    req.logout();
-    req.redirect('/');
-});
 
 router.get('/signin', function(req, res, next) {
     var messages = req.flash('error');
