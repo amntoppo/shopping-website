@@ -48,6 +48,8 @@ var products = [
 })
 ];
 
+
+//to disconnect AFTER finishing the seeding
 var done=0;
 for(var i=0; i < products.length; i++) {
   products[i].save(function(error, result) {

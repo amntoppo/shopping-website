@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expresshbs = require('express-handlebars');
 var session = require('express-session');
+var mongoStore = require('connect-mongo')(session);
 var flash = require('connect-flash');
 var passport = require('passport');
 var validator = require('express-validator');
@@ -38,12 +39,24 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({secret: 'asecretsession', resave: false, saveUninitialized: false}));
+app.use(session({
+    secret: 'asecretsession',
+    resave: false,
+    saveUninitialized: false,
+    store: new mongoStore({mongooseConnection: db}),
+    cookie: {maxAge: 180 * 60 * 1000}
+}));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(validator());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next) {
+   res.locals.login = req.isAuthenticated();
+   res.locals.session = req.session;
+   next();
+});
 
 app.use('/', index);
 app.use('/user', users);
